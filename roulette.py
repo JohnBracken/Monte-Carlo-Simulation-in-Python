@@ -25,7 +25,33 @@ plt.xlabel('Nightly Winnings/Losses($)')
 plt.ylabel('Counts of Winnings/Losses')
 
 
-#Part 2, Inside bet, 5$ bet on one number (35x payout).
+
+
+
+#Part 2a.  Inside bets, 5$ bets on a number (35x payout if you win)
+land_on_number = list(random.binomial(n=90, p = 1/38, size = 365))
+
+#Gains and losses for each night playing roulette, betting on a number.
+gains_losses = []
+
+#Calculate the gains/losses for each night of 90 wheel spins.
+#Bet $5 on each wheel spin.
+for sample in land_on_number:
+    winnings_or_losses_per_night = 175*sample -5*(90-sample)
+    gains_losses.append(winnings_or_losses_per_night)
+
+#Histogram of nightly wins/losses for the year.
+plt.figure()
+plt.hist(gains_losses, bins = 8)
+plt.title('Histogram of Nightly Wins/Losses for 1 Year: Betting on a Number in Roulette')
+plt.xlabel('Nightly Winnings/Losses($)')
+plt.ylabel('Counts of Winnings/Losses')
+
+
+
+
+
+##Part 2b (optional): Inside bet, 5$ bet on one number (35x payout) - explicit method one bet at a time.
 bet_size = 5
 winnings_losses = 0
 bets_per_night = 90
@@ -48,6 +74,7 @@ while count_days < 365:
     count_bets = 0
     winnings_losses = 0
     count_days += 1
+
 
 plt.figure()    
 plt.hist(winnings_losses_list, bins = 8)
