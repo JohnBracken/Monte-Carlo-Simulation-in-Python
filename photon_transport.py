@@ -1,4 +1,4 @@
-#Monte Carlo simulation of 20 keV X-ray
+#Monte Carlo simulation of 20 keV and 200 keV X-ray
 #photon transport in an infinite slab of Lucite
 #(ignore reflectance at lucite boundaries).
 
@@ -10,13 +10,24 @@ import mpl_toolkits
 
 #Attenuation, scattering and absorption coefficients
 #given in units of cm^-1 for 20 keV photons in Lucite.
-
 ut = 0.632
 u_ab = 0.35
 u_sc = 0.282
 
+
+#Attenuation, scattering and absorption coefficients
+#given in units of cm^-1 for 200 keV photons in Lucite.
+ut = 0.157
+u_ab = 0.0339
+u_sc = 0.1231
+
+#Anistropy estimate of 200 keV (just a guess).
+#Scattering should be more forward directed than
+#for 20 keV.
+g = 0.4
+
 #Number of photons
-N = 10
+N = 30
 
 photons = []
 
@@ -68,10 +79,15 @@ for k in range(N):
             delta_w = (u_ab/ut)*W
             W = W - delta_w
 
-            #Part 4: Scattering, assume isotropic
+            #Part 4: Scattering, assume isotropic for 20 keV
             epsilon = np.random.uniform(0, 1)
             scatter_angle = math.acos(1 - 2*epsilon) 
-
+           
+            #Scatter angle for anisotropic 200 keV photons 
+            epsilon = np.random.uniform(0, 1)
+            aniso = (1/(2*g))*(1 + g*g - ((1 - g*g)/(1 - g + 2*g*epsilon))**2)
+            scatter_angle = math.acos(aniso)
+ 
             epsilon = np.random.uniform(0, 1)
             polar_angle = 2*math.pi*epsilon
 
@@ -125,19 +141,19 @@ for k in range(N):
     photon_object["z_plot"] = z_plot  
     photons.append(photon_object)
 
-##2D plot in X-Y plane
-#plt.xlabel("X Position (cm)")
-#plt.title("20 keV X-ray Photon Transport in Lucite")
-#plt.ylabel("Y Position (cm)")
-#for j in range(len(photons)): 
-#    plt.plot(photons[j]["x_plot"], photons[j]["y_plot"], '.r-')
-#plt.show()
+#2D plot in X-Y plane
+plt.xlabel("X Position (cm)")
+plt.title("200 keV X-ray Photon Transport in Lucite")
+plt.ylabel("Y Position (cm)")
+for j in range(len(photons)): 
+    plt.plot(photons[j]["x_plot"], photons[j]["y_plot"], '.r-')
+plt.show()
 
 
 #3D plot of photon transport
 fig = plt.figure()
 ax = plt.axes(projection ="3d")
-plt.title("20 keV X-ray Photon Transport in Lucite")
+plt.title("200 keV X-ray Photon Transport in Lucite")
 ax.set_xlabel('X Position (cm)', fontweight ='bold')
 ax.set_ylabel('Y Position (cm)', fontweight ='bold')
 ax.set_zlabel('Z Position (cm)', fontweight ='bold')
