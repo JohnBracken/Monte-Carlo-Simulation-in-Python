@@ -14,6 +14,9 @@ ut = 0.632
 u_ab = 0.35
 u_sc = 0.282
 
+##Photon wavelength in m
+wavelength = 6.2e-11
+
 
 #Attenuation, scattering and absorption coefficients
 #given in units of cm^-1 for 200 keV photons in Lucite.
@@ -21,13 +24,16 @@ ut = 0.157
 u_ab = 0.0339
 u_sc = 0.1231
 
+#200 keV photon wavelength in m
+wavelength = 6.2e-12
+
 #Anistropy estimate of 200 keV (just a guess).
 #Scattering should be more forward directed than
 #for 20 keV.
 g = 0.4
 
 #Number of photons
-N = 30
+N = 10
 
 photons = []
 
@@ -79,15 +85,24 @@ for k in range(N):
             delta_w = (u_ab/ut)*W
             W = W - delta_w
 
-            #Part 4: Scattering, assume isotropic for 20 keV
+            ##Part 4: Scattering, assume isotropic for 20 keV.  Include Compton
+            #photon energy loss and wavelength change.  
             epsilon = np.random.uniform(0, 1)
-            scatter_angle = math.acos(1 - 2*epsilon) 
+            scatter_angle = math.acos(1 - 2*epsilon)
+            gamma = 2.426e-12/wavelength
+            delta_ws = W*gamma*(1 - math.cos(scatter_angle))/(1 + gamma*(1 - math.cos(scatter_angle)))
+            W = W - delta_ws
+            wavelength = wavelength + 2.426e-12*(1 - math.cos(scatter_angle))  
            
-            #Scatter angle for anisotropic 200 keV photons 
+            #Scatter angle for anisotropic 200 keV photons.  Include anisotropy for high energy photons.
             epsilon = np.random.uniform(0, 1)
             aniso = (1/(2*g))*(1 + g*g - ((1 - g*g)/(1 - g + 2*g*epsilon))**2)
             scatter_angle = math.acos(aniso)
- 
+            gamma = 2.426e-12/wavelength
+            delta_ws = W*gamma*(1 - math.cos(scatter_angle))/(1 + gamma*(1 - math.cos(scatter_angle)))
+            W = W - delta_ws
+            wavelength = wavelength + 2.426e-12*(1 - math.cos(scatter_angle))  
+            
             epsilon = np.random.uniform(0, 1)
             polar_angle = 2*math.pi*epsilon
 
@@ -153,7 +168,7 @@ plt.show()
 #3D plot of photon transport
 fig = plt.figure()
 ax = plt.axes(projection ="3d")
-plt.title("200 keV X-ray Photon Transport in Lucite")
+plt.title("20 keV X-ray Photon Transport in Lucite")
 ax.set_xlabel('X Position (cm)', fontweight ='bold')
 ax.set_ylabel('Y Position (cm)', fontweight ='bold')
 ax.set_zlabel('Z Position (cm)', fontweight ='bold')
