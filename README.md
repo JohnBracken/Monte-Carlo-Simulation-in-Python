@@ -7,3 +7,4 @@ Several examples of Monte Carlo Simulation in python.
 3.  Calculating win/loss distributions from roulette wheel bets.
 4.  Predicting stock prices.
 5.  X-ray photon transport in Lucite.
+6.  Distribution of nitrogen gas molecule speeds at 30 degrees C.
